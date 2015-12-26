@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# Vim artifacts
+*.sw*
+
+# CMake compilation placeholder
+build
