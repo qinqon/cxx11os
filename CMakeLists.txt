@@ -14,13 +14,28 @@ enable_language(ASM_NASM)
 add_executable(kernel.elf src/loader.asm)
 file(DOWNLOAD http://littleosbook.github.com/files/stage2_eltorito "${CMAKE_BINARY_DIR}/stage2_eltorito")
 
-add_custom_target(
-	iso 
-	COMMAND 
-           mkdir -p ${CMAKE_BINARY_DIR}/iso/boot/grub
-	COMMAND 
-           cp stage2_eltorito iso/boot/grub/ 
-	COMMAND 
-           cp ${CMAKE_BINARY_DIR}/kernel.elf iso/boot/
-	DEPENDS kernel.elf
+add_custom_command(
+	OUTPUT os.iso 
+        COMMAND mkdir -p iso/boot/grub
+        COMMAND cp stage2_eltorito iso/boot/grub/ 
+        COMMAND cp ${CMAKE_BINARY_DIR}/kernel.elf iso/boot/
+        COMMAND cp ${CMAKE_SOURCE_DIR}/src/menu.lst iso/boot/grub/
+	COMMAND genisoimage 
+			-R 
+			-b boot/grub/stage2_eltorito
+			-no-emul-boot
+			-boot-load-size 4
+			-A os
+			-input-charset utf8
+			-quiet 
+			-boot-info-table 
+			-o os.iso 
+			iso
+	DEPENDS kernel.elf ${CMAKE_SOURCE_DIR}/src/menu.lst
 )
+
+add_custom_target(iso DEPENDS os.iso)
+
+add_custom_target(run 
+	COMMAND bochs -f ${CMAKE_SOURCE_DIR}/cfg/bochsrc.txt -q
+	DEPENDS os.iso)
