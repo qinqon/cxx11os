@@ -14,7 +14,7 @@ enable_language(C)
 set(CMAKE_EXE_LINKER_FLAGS "-melf_i386 -T ${PROJECT_SOURCE_DIR}/src/linker.ld")
 set(CMAKE_C_LINK_EXECUTABLE "ld <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET>")
 
-add_executable(kernel.elf src/loader.asm src/kmain.c)
+add_executable(kernel.elf src/io.asm src/loader.asm src/kmain.c)
 file(DOWNLOAD http://littleosbook.github.com/files/stage2_eltorito "${CMAKE_BINARY_DIR}/stage2_eltorito")
 
 add_custom_command(
